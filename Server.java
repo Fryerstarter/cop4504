@@ -38,10 +38,12 @@ public class Server
 				String clientOutput = "";
 				
 				System.out.println("Listening on port " + port);
+				System.out.println("");
 				
 				//accept incoming request
 				Socket socket = server.accept();
 				System.out.println("Client accepted.");
+				System.out.println("");
 				
 				System.out.println("Setting up reader/writer...");
 				//setup for Server to Client
@@ -50,6 +52,7 @@ public class Server
 				//setup for Client to Server
 				PrintWriter toSocket = new PrintWriter(socket.getOutputStream(), true);
 				System.out.println("Data stream established...");
+				System.out.println("");
 				System.out.println("Waiting for client input...");
 				
 				//start of try block for input handling
@@ -71,6 +74,7 @@ public class Server
 				}catch(IOException e)
 				{
 					System.out.println("Client disconnected.");
+					System.out.println("");
 					socket.close();
 				}
 			}
