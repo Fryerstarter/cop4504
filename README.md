@@ -15,3 +15,5 @@ in Server.java)
 -open 2 cmd prompts and navigate to folder with .class files
   java Server
   java Client
+
+only a-c work at the moment, and Q to quit
