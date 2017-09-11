@@ -4,6 +4,7 @@ COP4504 - Project 1
 written by - Chris Kile
 Note- port IP is hardcoded below. You will need to change this to your IP. If you google "what is my ip" 
 it will come up
+Note - only A through C work at the moment, and Q.
 
 TODO:
 	1. better IP system
