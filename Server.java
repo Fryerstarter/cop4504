@@ -4,6 +4,7 @@ COP4504 - Project 1
 written by - Chris Kile
 
 Note- port is hardcoded below as 9090
+Note- only A through C work at the moment, and Q
 
 TODO:
 	1. Netsat
