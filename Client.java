@@ -99,7 +99,7 @@ public class Client
 		System.out.println("F. Running Processes");
 		System.out.println("Q. Quit");
 		System.out.println("-----------------------------");
-		System.out.println("Input");
+		System.out.println("");
 	//end PrintMenu
 	}
 //end client
