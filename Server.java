@@ -35,7 +35,7 @@ public class Server
 			while(true)
 			{
 				String clientInput = "";
-				String clientOutput = "";
+				//String clientOutput = "";
 				
 				System.out.println("Listening on port " + port);
 				System.out.println("");
@@ -61,15 +61,23 @@ public class Server
 					while((clientInput = fromSocket.readLine()) != null)
 					{
 						System.out.println("Client sent: " + clientInput);
-						clientOutput = ProcessInput(clientInput);
-						if(clientOutput.equals("Q") || clientOutput.equals("q"))
+						ArrayList<String> outputList = new ArrayList<String>();
+						outputList = ProcessInput(clientInput);
+						if(clientInput.equals("Q") || clientInput.equals("q"))
 						{
 							socket.close();
 						}else
 						{
-						System.out.println("Sending: " + clientOutput);
-						toSocket.println(clientOutput);
+							System.out.println("Sending");
+							outputList.add("-2");
+							
+							for(int i = 0; i < outputList.size(); i++){
+								//System.out.println("Printing line " + i);
+								toSocket.println(outputList.get(i));
+							}
+							
 						}
+						
 					}
 				}catch(IOException e)
 				{
@@ -123,40 +131,47 @@ public class Server
 	//end DateAndTime
 	}
 	
-	public static String ProcessInput(String clientInput)
+	public static ArrayList<String> ProcessInput(String clientInput)
 	{
-		String output = "";
+		ArrayList<String> outputList = new ArrayList<String>();
 		
 		if(clientInput.equals("A") || clientInput.equals("a"))
 		{
 			//output = "A";
-			output = DateAndTime();
+			outputList.add(DateAndTime());
 		}else if(clientInput.equals("B") || clientInput.equals("b"))
 		{
 			//output = "B";
-			output = Uptime();
+			outputList.add(Uptime());
 		}else if(clientInput.equals("C") || clientInput.equals("c"))
 		{
 			//output = "C";
-			output = Memory();
+			outputList.add(Memory());
 		}else if(clientInput.equals("D") || clientInput.equals("d"))
 		{
-			output = "D";
+			//output = "D";
+		
 		}else if(clientInput.equals("E") || clientInput.equals("e"))
 		{
-			output = "E";
+			//output = "E";
 		}else if(clientInput.equals("F") || clientInput.equals("f"))
 		{
-			output = "F";
+			//output = "F";
 		}else if(clientInput.equals("Q") || clientInput.equals("q"))
 		{
-			output = "Q";
+			//output = "Q";
 		}else
 		{
-			return "-1";
+			outputList.add("-1");
 		}
-		return output;
+		return outputList;
 	//end ProcessInput
 	}
+	
+	/*
+	public static String commander(String input){
+		
+	}
+	*/
 //end server
 }

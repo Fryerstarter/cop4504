@@ -9,12 +9,16 @@ Note - only A through C work at the moment, and Q.
 TODO:
 	1. better IP system
 	2. IP verification
+	3. Data export
+	4. multi-threaded client test program
 
 */
 
 
 import java.io.*;
 import java.net.*;
+import java.lang.*;
+import java.util.*;
 
 public class Client
 {
@@ -28,15 +32,16 @@ public class Client
 				//setup for user input from console
 				InputStreamReader stdInReader = new InputStreamReader(System.in);
 				BufferedReader stdIn = new BufferedReader(stdInReader);
+				long startTime = 0, finishTime = 0, delay = 0;
 				
 				
-				
-				//flag to determine if q or Q for quittin time
+				//flag to determine if q or Q for quitting time
 				//boolean quit = false;
 				
 				
 				//make connection
 				System.out.println("Making connection....");
+				
 				Socket socket = new Socket(ip, 9090);
 				System.out.println("Setting up reader/writer...");
 				//setup for socket toServer
@@ -51,9 +56,11 @@ public class Client
 					String serverOutput = "";
 					PrintMenu();
 					userInput = stdIn.readLine();
+					startTime = System.currentTimeMillis();
 					toServer.println(userInput);
 					if(userInput.equals("Q")||userInput.equals("q"))
 					{
+						//terminates connection to server
 						toServer.close();
 						fromServer.close();
 						stdInReader.close();
@@ -68,16 +75,26 @@ public class Client
 						{
 						}
 						System.out.println("Receiving from server...");
-						serverOutput = fromServer.readLine();
-						if(serverOutput.equals("-1"))
+						ArrayList<String> inputList = new ArrayList<String>();
+						do{
+							serverOutput = fromServer.readLine();
+							inputList.add(serverOutput);
+						}while(!serverOutput.equals("-2"));
+						finishTime = System.currentTimeMillis();
+						if(inputList.get(0).equals("-1"))
 						{
 							System.out.println("Error on input.");
 						}else
 						{
-							System.out.println(serverOutput);
+							for(int i = 0; i < inputList.size() - 1; i++)
+							{
+								System.out.println(inputList.get(i));
+							}
+							System.out.println("Delay is: " + (finishTime - startTime));
 						}
 						
 					}
+					
 				}
 			}catch(IOException e)
 			{
