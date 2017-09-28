@@ -28,7 +28,13 @@ public class Client
 		{
 			try
 			{
-				String ip = "73.104.15.60";
+            String ip;
+            if(args.length > 0){
+               ip = args[0];
+            }
+            else{
+				   ip = "73.104.15.60";
+            }
 				//setup for user input from console
 				InputStreamReader stdInReader = new InputStreamReader(System.in);
 				BufferedReader stdIn = new BufferedReader(stdInReader);
