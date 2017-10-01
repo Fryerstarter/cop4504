@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.lang.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class ClientThreaded
 {
@@ -22,15 +23,17 @@ public class ClientThreaded
 		}else
 		{
 			ip.setIP("73.104.15.60");
-			numJobs = 10;
+			numJobs = 100;
 		}
-		
-		
+		ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
+		queue.add("ThreadName,DelayPoint1,DelayPoint2");
+		Thread printThread = new Thread(new Printer(queue));
+		printThread.start();
 		Thread[] threads = new Thread[numJobs];
 		
 		for(int i = 0; i < numJobs; i++)
 		{
-			Thread newThread = new Thread(new ThreadProcess());
+			Thread newThread = new Thread(new ThreadProcess(queue));
 			newThread.setName("Thread"+i);
 			threads[i] = newThread;
 			threads[i].start();
@@ -43,6 +46,13 @@ public class ClientThreaded
 
 class ThreadProcess implements Runnable
 {
+	ConcurrentLinkedQueue<String> queue;
+	
+	ThreadProcess(ConcurrentLinkedQueue<String> queue)
+	{
+		this.queue = queue;
+	}
+	
 	public void run()
 	{
 		this.Connect();
@@ -50,6 +60,7 @@ class ThreadProcess implements Runnable
 	
 	public void Connect()
 	{
+		
 		try
 		{
 			IPInfo ip = new IPInfo();
@@ -88,7 +99,10 @@ class ThreadProcess implements Runnable
 			secCom = toServer(fromServer, toServer, "C");
 			finishTime = System.currentTimeMillis();
 			delay2 = finishTime - startTime;
-			System.out.println(Thread.currentThread().getName() + " " + delay1 + " " + delay2);
+			System.out.println("Time added.");
+			String passer = Thread.currentThread().getName() + "," + delay1 + "," + delay2;
+			//System.out.println(passer);
+			queue.add(passer);
 			fromServer.close();
 			toServer.close();
 			socket.close();
@@ -101,6 +115,8 @@ class ThreadProcess implements Runnable
 			//socket.close();
 			
 		}
+		
+		
 		
 			
 	//END CONNECT
@@ -119,6 +135,7 @@ class ThreadProcess implements Runnable
 			
 			do{
 				serverOutput = fromServer.readLine();
+				
 				inputList.add(serverOutput);
 			}while(!serverOutput.equals("-2"));
 			
@@ -175,4 +192,42 @@ class IPInfo
 	
 	
 	
+}
+
+class Printer implements Runnable
+{
+	ConcurrentLinkedQueue<String> queue;
+	
+	Printer(ConcurrentLinkedQueue<String> queue)
+	{
+		this.queue = queue;
+	}
+	
+	public void run()
+	{
+		String str;
+		while(true){
+			
+			
+			
+			try{
+				Thread.sleep(50);
+				FileWriter fw = new FileWriter("TestData.csv", true);
+				BufferedWriter bw = new BufferedWriter(fw);
+				PrintWriter out = new PrintWriter(bw);
+				while((str = queue.poll())!= null)
+				{
+					System.out.println("Printing...");
+					System.out.println(str);
+					out.println(str);
+				}
+				out.close();
+				}catch(Exception e)
+				{
+					System.out.println("Error saving to testdata");
+					
+				}
+			
+		}
+	}
 }
