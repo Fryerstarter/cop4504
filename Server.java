@@ -62,12 +62,13 @@ public class Server
 					{
 						System.out.println("Client sent: " + clientInput);
 						ArrayList<String> outputList = new ArrayList<String>();
-						outputList = ProcessInput(clientInput);
+						
 						if(clientInput.equals("Q") || clientInput.equals("q"))
 						{
 							socket.close();
 						}else
 						{
+							outputList = ProcessInput(clientInput);
 							System.out.println("Sending");
 							outputList.add("-2");
 							
@@ -93,42 +94,23 @@ public class Server
 	
 	//end main
 	}
-	
-	public static String UptimeFormat(long uptime)
-	{
-		//converts ms to HH:MM:SS
-		String formattedUptime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(uptime),
-		TimeUnit.MILLISECONDS.toMinutes(uptime) % TimeUnit.HOURS.toMinutes(1),
-		TimeUnit.MILLISECONDS.toSeconds(uptime) % TimeUnit.MINUTES.toSeconds(1));
-		return formattedUptime;
-	//end UptimeFormat
-	}
-	
-	public static String Memory()
-	{
-		System.out.println("Sending Memory Usage.");
-		MemoryUsage usage = ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage();
-		long memory = usage.getUsed();
-		return (memory%1000 + "kb");
-	//end memory
-	}
-	
-	public static String Uptime()
-	{
-		long uptime;
-		
-		//gets uptime from jvm
-		RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();
-		uptime = rb.getUptime();
-		return UptimeFormat(uptime);
-	//end uptime
-	}
-	
-	public static String DateAndTime()
-	{
-		Date date = new Date();
-		return date.toString();
-	//end DateAndTime
+
+	public static ArrayList<String> ExecuteCommand(String command){
+		ArrayList<String> returnList = new ArrayList<String>();
+		try {
+			Process process = Runtime.getRuntime().exec(command);
+			BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String s;
+
+
+			while ((s = output.readLine()) != null) {
+				returnList.add(s);
+			}
+		}catch(Exception e){
+
+		}
+		return returnList;
+
 	}
 	
 	public static ArrayList<String> ProcessInput(String clientInput)
@@ -137,26 +119,26 @@ public class Server
 		
 		if(clientInput.equals("A") || clientInput.equals("a"))
 		{
-			//output = "A";
-			outputList.add(DateAndTime());
+
+			outputList= ExecuteCommand("date");
 		}else if(clientInput.equals("B") || clientInput.equals("b"))
 		{
 			//output = "B";
-			outputList.add(Uptime());
+			outputList= ExecuteCommand("uptime");
 		}else if(clientInput.equals("C") || clientInput.equals("c"))
 		{
 			//output = "C";
-			outputList.add(Memory());
+			outputList= ExecuteCommand("free -m");
 		}else if(clientInput.equals("D") || clientInput.equals("d"))
 		{
 			//output = "D";
-		
+			outputList = ExecuteCommand("netstat");
 		}else if(clientInput.equals("E") || clientInput.equals("e"))
 		{
-			//output = "E";
+			outputList = ExecuteCommand("users");
 		}else if(clientInput.equals("F") || clientInput.equals("f"))
 		{
-			//output = "F";
+			outputList = ExecuteCommand("ps -A");
 		}else if(clientInput.equals("Q") || clientInput.equals("q"))
 		{
 			//output = "Q";
