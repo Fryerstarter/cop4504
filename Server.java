@@ -98,16 +98,17 @@ public class Server
 	public static ArrayList<String> ExecuteCommand(String command){
 		ArrayList<String> returnList = new ArrayList<String>();
 		try {
+			//execute the command
 			Process process = Runtime.getRuntime().exec(command);
 			BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String s;
 
-
+			//adds each line of output to the array list to return to client
 			while ((s = output.readLine()) != null) {
 				returnList.add(s);
 			}
 		}catch(Exception e){
-
+			e.printStackTrace();
 		}
 		return returnList;
 
