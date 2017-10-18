@@ -35,7 +35,7 @@ public class Server
 			while(true)
 			{
 				String clientInput = "";
-				//String clientOutput = "";
+
 				
 				System.out.println("Listening on port " + port);
 				System.out.println("");
@@ -43,24 +43,24 @@ public class Server
 				//accept incoming request
 				Socket socket = server.accept();
 				System.out.println("Client accepted.");
-				System.out.println("");
+				//System.out.println("");
 				
-				System.out.println("Setting up reader/writer...");
+				//System.out.println("Setting up reader/writer...");
 				//setup for Server to Client
 				BufferedReader fromSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
 				//setup for Client to Server
 				PrintWriter toSocket = new PrintWriter(socket.getOutputStream(), true);
-				System.out.println("Data stream established...");
-				System.out.println("");
-				System.out.println("Waiting for client input...");
+				//System.out.println("Data stream established...");
+				//System.out.println("");
+				//System.out.println("Waiting for client input...");
 				
 				//start of try block for input handling
 				try
 				{
 					while((clientInput = fromSocket.readLine()) != null)
 					{
-						System.out.println("Client sent: " + clientInput);
+						//System.out.println("Client sent: " + clientInput);
 						ArrayList<String> outputList = new ArrayList<String>();
 						
 						if(clientInput.equals("Q") || clientInput.equals("q"))
@@ -69,11 +69,11 @@ public class Server
 						}else
 						{
 							outputList = ProcessInput(clientInput);
-							System.out.println("Sending");
+							//System.out.println("Sending Response");
 							outputList.add("-2");
 							
 							for(int i = 0; i < outputList.size(); i++){
-								//System.out.println("Printing line " + i);
+
 								toSocket.println(outputList.get(i));
 							}
 							
@@ -98,6 +98,7 @@ public class Server
 	public static ArrayList<String> ExecuteCommand(String command){
 		ArrayList<String> returnList = new ArrayList<String>();
 		try {
+			System.out.println("Attempting to execute the command");
 			//execute the command
 			Process process = Runtime.getRuntime().exec(command);
 			BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -105,11 +106,13 @@ public class Server
 
 			//adds each line of output to the array list to return to client
 			while ((s = output.readLine()) != null) {
+				System.out.println(s);
 				returnList.add(s);
 			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		System.out.println("Returning List");
 		return returnList;
 
 	}
@@ -129,10 +132,12 @@ public class Server
 		}else if(clientInput.equals("C") || clientInput.equals("c"))
 		{
 			//output = "C";
+
 			outputList= ExecuteCommand("free -m");
 		}else if(clientInput.equals("D") || clientInput.equals("d"))
 		{
 			//output = "D";
+			System.out.println("Client entered D");
 			outputList = ExecuteCommand("netstat");
 		}else if(clientInput.equals("E") || clientInput.equals("e"))
 		{
