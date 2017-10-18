@@ -1,17 +1,11 @@
 /*
-----CLIENT SIDE----
+----Client Side----
 COP4504 - Project 1
-written by - Chris Kile
-Note- port IP is hardcoded below. You will need to change this to your IP. If you google "what is my ip" 
-it will come up
-Note - only A through C work at the moment, and Q.
-
-TODO:
-	1. better IP system
-	2. IP verification
-	3. Data export
-	4. multi-threaded client test program
-
+Group 11
+Christopher Kile
+Paul Ski
+Ben
+Davensly Dugar
 */
 
 

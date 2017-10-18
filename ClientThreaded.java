@@ -1,3 +1,13 @@
+/*
+----Threaded Test Client----
+COP4504 - Project 1
+Group 11
+Christopher Kile
+Paul Ski
+Ben
+Davensly Dugar
+*/
+
 import java.io.*;
 import java.net.*;
 import java.lang.*;

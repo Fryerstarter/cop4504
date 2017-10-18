@@ -1,15 +1,12 @@
 /*
-----SERVER SIDE----
+----Server Side----
 COP4504 - Project 1
-written by - Chris Kile
+Group 11
+Christopher Kile
+Paul Ski
+Ben
+Davensly Dugar
 
-Note- port is hardcoded below as 9090
-Note- only A through C work at the moment, and Q
-
-TODO:
-	1. Netsat
-	2. Current Users
-	3. running processes
 
 */
 
