@@ -6,51 +6,76 @@ import java.util.concurrent.*;
 
 public class ClientThreaded
 {
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		IPInfo ip = new IPInfo();
-		
+		String command;
 		ip.setPort(9090);
 		int numJobs = 10;
-		if(args.length ==1 )
-		{
+		if (args.length == 1) {
 			ip.setIP(args[0]);
 			numJobs = 10;
-		}else if(args.length == 2)
-		{
+			command = "A";
+		} else if (args.length == 2) {
 			ip.setIP(args[0]);
 			numJobs = Integer.parseInt(args[1]);
-		}else
-		{
+			command = "A";
+		} else if (args.length == 3) {
+			ip.setIP(args[0]);
+			numJobs = Integer.parseInt(args[1]);
+			command = args[2];
+		} else {
 			ip.setIP("73.104.15.60");
-			numJobs = 100;
+			numJobs = 50;
+			command = "A";
 		}
-		ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
-		queue.add("ThreadName,DelayPoint1,DelayPoint2");
-		Thread printThread = new Thread(new Printer(queue));
+
+		command = command.toUpperCase();
+
+		//Set up the Queue for printing. Add header for csv formatting
+		ConcurrentLinkedQueue<String> printQueue = new ConcurrentLinkedQueue<String>();
+		printQueue.add("ThreadName,Delay");
+		Thread printThread = new Thread(new Printer(printQueue, command));
 		printThread.start();
+
+		//start primary threads
 		Thread[] threads = new Thread[numJobs];
-		
-		for(int i = 0; i < numJobs; i++)
-		{
-			Thread newThread = new Thread(new ThreadProcess(queue));
-			newThread.setName("Thread"+i);
+
+		for (int i = 0; i < numJobs; i++) {
+			Thread newThread = new Thread(new ThreadProcess(printQueue, command));
+			newThread.setName("Thread" + i);
 			threads[i] = newThread;
+
+		}
+
+		for (int i = 0; i < numJobs; i++) {
 			threads[i].start();
 		}
-		
-		
+
+		for(int i = 0; i < numJobs; i++){
+			try{
+				threads[i].join();
+			}catch(Exception e){
+
+			}
+		}
+		//join the print thread
+		try {
+			printThread.join();
+		} catch (Exception e) {
+		}
+
 	}
-	
 }
 
 class ThreadProcess implements Runnable
 {
 	ConcurrentLinkedQueue<String> queue;
+	String command;
 	
-	ThreadProcess(ConcurrentLinkedQueue<String> queue)
+	ThreadProcess(ConcurrentLinkedQueue<String> queue, String command)
 	{
 		this.queue = queue;
+		this.command = command;
 	}
 	
 	public void run()
@@ -67,7 +92,7 @@ class ThreadProcess implements Runnable
 			InputStreamReader stdInReader = new InputStreamReader(System.in);
 			BufferedReader stdIn = new BufferedReader(stdInReader);
 			long startTime = 0, finishTime = 0, delay1 = 0, delay2 = 0;
-
+			
 			//make connection
 			//System.out.println("Making connection....");
 			System.out.println("Setting up " + Thread.currentThread().getName());
@@ -85,22 +110,19 @@ class ThreadProcess implements Runnable
 			
 			//userInput = stdIn.readLine();
 			ArrayList<String> firstCom = new ArrayList<String>();
-			ArrayList<String> secCom = new ArrayList<String>();
+
 			startTime = System.currentTimeMillis();
 			
-			//toServer.println("B");
-			firstCom = toServer(fromServer, toServer, "B");
+
+			firstCom = toServer(fromServer, toServer, command);
 			
 			finishTime = System.currentTimeMillis();
 			delay1 = finishTime - startTime;
 			
-			startTime = System.currentTimeMillis();
-			
-			secCom = toServer(fromServer, toServer, "C");
-			finishTime = System.currentTimeMillis();
-			delay2 = finishTime - startTime;
+
 			System.out.println("Time added.");
-			String passer = Thread.currentThread().getName() + "," + delay1 + "," + delay2;
+			String passer = Thread.currentThread().getName() + "," + delay1;
+			
 			//System.out.println(passer);
 			queue.add(passer);
 			fromServer.close();
@@ -197,29 +219,38 @@ class IPInfo
 class Printer implements Runnable
 {
 	ConcurrentLinkedQueue<String> queue;
+	String filename;
+	String command;
+	int i;
 	
-	Printer(ConcurrentLinkedQueue<String> queue)
+	Printer(ConcurrentLinkedQueue<String> queue, String command)
 	{
 		this.queue = queue;
+		this.command = command;
+		i = 0;
 	}
 	
 	public void run()
 	{
 		String str;
-		while(true){
-			
-			
-			
+		long startTime = System.currentTimeMillis();
+		long currentTime=startTime;
+		while(currentTime - startTime < 1000){
+
 			try{
 				Thread.sleep(50);
-				FileWriter fw = new FileWriter("TestData.csv", true);
+				filename = "TestData"+command+".csv";
+				FileWriter fw = new FileWriter(filename, true);
 				BufferedWriter bw = new BufferedWriter(fw);
 				PrintWriter out = new PrintWriter(bw);
+				currentTime = System.currentTimeMillis();
 				while((str = queue.poll())!= null)
 				{
-					System.out.println("Printing...");
+					System.out.println("Printing... " + i);
 					System.out.println(str);
 					out.println(str);
+					startTime=System.currentTimeMillis();
+					i++;
 				}
 				out.close();
 				}catch(Exception e)
