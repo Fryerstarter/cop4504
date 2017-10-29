@@ -23,30 +23,27 @@ public class ServerThreaded
 		int port = 9090;
 		ArrayList<Thread> clientList = new ArrayList<Thread>();
 		try{
+			System.out.println("The server is listening on port: " + port);
 			ServerSocket server = new ServerSocket(port);
 			
 			while(true){
 				Socket socket = server.accept();
 				System.out.println("Client accepted. Creating thread");
+
 				Thread newThread = new Thread(new ServerThread(socket));
 				newThread.start();
 				clientList.add(newThread);
 				
-				for(int i = 0; i < clientList.size(); i++){
-					try{
-						clientList.get(i).join();
-					}catch(Exception e){
-						
-					}
-				}
+				
 				
 				
 			}
 		}catch(Exception e){
-			
+		
 		}
 		
 	}
+}
 	
 	
 	
@@ -62,27 +59,12 @@ class ServerThread implements Runnable{
 		//start of try block for port connection, locks port
 		try
 		{
-			
-			
-			//start of main while loop, should never exit
-			while(true)
-			{
-				
-				
-				//accept incoming request
-				
-				//System.out.println("");
-				
-				//System.out.println("Setting up reader/writer...");
-				//setup for Server to Client
+
+
 				BufferedReader fromSocket = new BufferedReader(new InputStreamReader(client.getInputStream()));
-				
+				String clientInput;
 				//setup for Client to Server
 				PrintWriter toSocket = new PrintWriter(client.getOutputStream(), true);
-				//System.out.println("Data stream established...");
-				//System.out.println("");
-				//System.out.println("Waiting for client input...");
-				
 				//start of try block for input handling
 				try
 				{
@@ -93,10 +75,10 @@ class ServerThread implements Runnable{
 						
 						if(clientInput.equals("Q") || clientInput.equals("q"))
 						{
-							socket.close();
+							client.close();
 						}else
 						{
-							outputList = ProcessInput(clientInput);
+							outputList = Util.ProcessInput(clientInput);
 							//System.out.println("Sending Response");
 							outputList.add("-2");
 							
@@ -112,18 +94,28 @@ class ServerThread implements Runnable{
 				{
 					System.out.println("Client disconnected.");
 					System.out.println("");
-					socket.close();
+					client.close();
+				}finally{
+					fromSocket.close();
+					toSocket.close();
 				}
-			}
+			
 		}catch(IOException e)
 		{
-			System.out.println("Error: port " + port + " is not working.");
-		}
-	
-	
-	//end main
+			System.out.println("Error: port is not working.");
+		
+		} 
+
 	}
+	
+	public void setSocket(Socket client){
+		this.client = client;
+		
+	}
+	
 }
+
+class Util{
 
 	public static ArrayList<String> ExecuteCommand(String command){
 		ArrayList<String> returnList = new ArrayList<String>();
